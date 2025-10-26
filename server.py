@@ -1,22 +1,22 @@
 from flask import Flask, request, jsonify
-from ai.model_markov import MarkovAI
+from ai.model_markov import MarkovAI  # ここが ai/に変更済みで正しい
 
 app = Flask(__name__)
-ai_model = MarkovAI()
+ai_model = MarkovAI()  # インスタンス作成
 
 @app.route('/')
 def index():
-    return "AI Server is running!"
+    return "AIサーバー稼働中"
 
 @app.route('/generate', methods=['POST'])
 def generate():
     data = request.json
     prompt = data.get('prompt', '')
     if not prompt:
-        return jsonify({"error": "No prompt provided"}), 400
+        return jsonify({"error": "promptが必要です"}), 400
     
-    response = ai_model.generate_text(prompt)
-    return jsonify({"response": response})
+    result = ai_model.generate(prompt)  # MarkovAI の generate メソッドを呼ぶ
+    return jsonify({"result": result})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
