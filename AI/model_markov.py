@@ -1,20 +1,22 @@
-import random, re
+import random
+from collections import defaultdict
 
 class MarkovAI:
     def __init__(self):
-        self.memory = {}
+        self.model = defaultdict(list)
+
     def train(self, text):
-        words = re.findall(r'\w+', text)
-        for i in range(len(words)-1):
-            key = words[i].lower()
-            self.memory.setdefault(key, []).append(words[i+1])
-    def generate(self, seed="こんにちは", length=15):
-        seed = seed.lower()
-        if seed not in self.memory:
-            seed = random.choice(list(self.memory.keys()))
-        result = [seed]
-        for _ in range(length):
-            nexts = self.memory.get(result[-1], [])
-            if not nexts: break
-            result.append(random.choice(nexts))
+        words = text.split()
+        for i in range(len(words) - 1):
+            self.model[words[i]].append(words[i + 1])
+
+    def generate(self, start_word, length=20):
+        if start_word not in self.model:
+            start_word = random.choice(list(self.model.keys()))
+        result = [start_word]
+        for _ in range(length - 1):
+            next_words = self.model.get(result[-1])
+            if not next_words:
+                break
+            result.append(random.choice(next_words))
         return " ".join(result)
