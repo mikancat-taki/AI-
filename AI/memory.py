@@ -1,60 +1,15 @@
-# ai/memory.py
-import json
-from collections import deque
-
-
-POSITIVE = ["うれ", "たの", "好き", "よかった", "楽しい", "最高"]
-NEGATIVE = ["いや", "むか", "悲しい", "疲れ", "かなしい", "つら"]
-
-
-class Memory:
-def __init__(self, max_items=200, path='data/memory.json'):
-self.history = deque(maxlen=max_items)
-self.path = path
-try:
-with open(path,'r',encoding='utf-8') as f:
-self.history.extend(json.load(f))
-except Exception:
-pass
-
-
-def add(self, speaker, text):
-item = { 'speaker': speaker, 'text': text }
-self.history.append(item)
-self._save()
-
-
-def _save(self):
-try:
-with open(self.path,'w',encoding='utf-8') as f:
-json.dump(list(self.history), f, ensure_ascii=False, indent=2)
-except Exception:
-pass
-
-
-def get_recent(self, n=10):
-return list(self.history)[-n:]
-
-
-def emotion_score(self):
-# naive heuristic
-s = 0
-for item in self.history:
-text = item['text']
-for p in POSITIVE:
-if p in text:
-s += 1
-for q in NEGATIVE:
-if q in text:
-s -= 1
-return max(-10, min(10, s))
-
-
-def context_for_model(self, max_chars=500):
-# return a short context string for model conditioning
-out = ''
-for item in self.get_recent(20):
-out += f"{item['speaker']}: {item['text']}\n"
-if len(out) > max_chars:
-break
-return out
+class MemoryModule:
+    def __init__(self):
+        self.history = []
+        self.emotion = "😊"
+    def add_user_message(self, msg):
+        self.history.append(("user", msg))
+    def add_bot_message(self, msg):
+        self.history.append(("bot", msg))
+    def get_emotion_state(self):
+        # ユーザーの単語に応じて感情を変える
+        if any(word in self.history[-1][1] for word in ["怒", "ムカ", "嫌"]):
+            self.emotion = "😠"
+        elif any(word in self.history[-1][1] for word in ["嬉", "楽", "好き"]):
+            self.emotion = "😄"
+        return self.emotion
