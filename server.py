@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, jsonify
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), "ai"))
 
-from model_markov import MarkovAI
+from ai.model_markov import MarkovAI
+from ai.model_transformer import TransformerAI
 from model_nn import SimpleNN
 from model_transformer import TinyTransformer
 from memory import MemoryModule
