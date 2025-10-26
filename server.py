@@ -1,31 +1,22 @@
-# server.py
 from flask import Flask, request, jsonify
 from ai.model_markov import MarkovAI
-from ai.model_transformer import TransformerAI
 
 app = Flask(__name__)
-
-# インスタンス化
-model_markov = MarkovAI()
-transformer_ai = TransformerAI()
+ai_model = MarkovAI()
 
 @app.route('/')
 def index():
-    return "AI Server is running."
+    return "AI Server is running!"
 
-@app.route('/markov', methods=['POST'])
-def run_markov():
+@app.route('/generate', methods=['POST'])
+def generate():
     data = request.json
-    text = data.get('text', '')
-    result = markov_ai.generate(text)
-    return jsonify({"result": result})
+    prompt = data.get('prompt', '')
+    if not prompt:
+        return jsonify({"error": "No prompt provided"}), 400
+    
+    response = ai_model.generate_text(prompt)
+    return jsonify({"response": response})
 
-@app.route('/transformer', methods=['POST'])
-def run_transformer():
-    data = request.json
-    text = data.get('text', '')
-    result = transformer_ai.generate(text)
-    return jsonify({"result": result})
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
