@@ -6,7 +6,7 @@ from ai.model_transformer import TransformerAI
 app = Flask(__name__)
 
 # インスタンス化
-model_markov_ai = MarkovAI()
+model_markov = MarkovAI()
 transformer_ai = TransformerAI()
 
 @app.route('/')
