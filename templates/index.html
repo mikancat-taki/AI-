@@ -2,63 +2,36 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>オリジナルAIチャット</title>
+<title>Original AI Chat</title>
 <style>
-body {
-  background: linear-gradient(120deg, #0d0d0d, #222);
-  color: #fff;
-  font-family: "Segoe UI", sans-serif;
-  text-align: center;
-  padding: 20px;
-}
-#chatbox {
-  width: 80%;
-  max-width: 600px;
-  margin: 0 auto;
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  padding: 16px;
-  height: 60vh;
-  overflow-y: auto;
-  text-align: left;
-}
-.user { color: #00ccff; margin: 6px 0; }
-.bot { color: #ffcc00; margin: 6px 0; }
-input {
-  width: 70%; padding: 10px; border-radius: 8px; border: none;
-}
-button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 8px;
-  background: #00ccff;
-  color: #000;
-  cursor: pointer;
-}
+body { background:#0d0d0d; color:#fff; font-family:sans-serif; text-align:center; }
+#chatbox { width:80%; margin:auto; background:#111; border-radius:10px; padding:10px; height:60vh; overflow-y:auto; }
+.user { color:#0ff; }
+.bot { color:#ff0; }
+input { width:70%; padding:10px; border-radius:8px; border:none; }
+button { padding:10px; border:none; border-radius:8px; background:#0ff; color:#000; cursor:pointer; }
 </style>
 </head>
 <body>
-<h1>🤖 My Original AI Chat</h1>
+<h1>🧠 Original AI Chat</h1>
 <div id="chatbox"></div>
-<input id="userInput" placeholder="メッセージを入力...">
-<button onclick="sendMessage()">送信</button>
+<input id="msg" placeholder="メッセージを入力...">
+<button onclick="send()">送信</button>
 
 <script>
-async function sendMessage() {
-  const input = document.getElementById("userInput");
-  const message = input.value.trim();
-  if (!message) return;
-  document.getElementById("chatbox").innerHTML += `<p class='user'>👤 ${message}</p>`;
-  input.value = "";
-  
+async function send() {
+  const box = document.getElementById("chatbox");
+  const msg = document.getElementById("msg").value.trim();
+  if (!msg) return;
+  box.innerHTML += `<p class='user'>👤 ${msg}</p>`;
+  document.getElementById("msg").value = "";
   const res = await fetch("/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message })
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({message:msg})
   });
   const data = await res.json();
-  document.getElementById("chatbox").innerHTML += `<p class='bot'>🤖 ${data.response}</p>`;
-  document.getElementById("chatbox").scrollTop = chatbox.scrollHeight;
+  box.innerHTML += `<p class='bot'>🤖 ${data.response}</p>`;
+  box.scrollTop = box.scrollHeight;
 }
 </script>
 </body>
