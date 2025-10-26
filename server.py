@@ -1,42 +1,35 @@
 from flask import Flask, render_template, request, jsonify
-from ai.model_markov import MarkovAI
-from ai.model_nn import SimpleNN
-from ai.model_transformer import TinyTransformer
-from ai.memory import MemoryModule
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), "ai"))
+
+from model_markov import MarkovAI
+from model_nn import SimpleNN
+from model_transformer import TinyTransformer
+from memory import MemoryModule
+from emotion import EmotionModule
 
 app = Flask(__name__)
 
-# ===== AI モジュール初期化 =====
 markov = MarkovAI()
 nn = SimpleNN()
 transformer = TinyTransformer()
 memory = MemoryModule()
-
-# ===== データ学習 =====
-try:
-    text = open("data/dataset.txt", encoding="utf-8").read()
-    markov.train(text)
-    nn.train_on_text(text)
-    transformer.train(text)
-except Exception as e:
-    print("初期学習失敗:", e)
+emotion = EmotionModule()
 
 @app.route("/")
-def index():
+def home():
     return render_template("index.html")
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    msg = request.json["message"]
-    memory.add_user_message(msg)
-    response = markov.generate(msg)
-    memory.add_bot_message(response)
-    emotion = memory.get_emotion_state()
-    return jsonify({
-        "response": f"[{emotion}] {response}"
-    })
+    user_msg = request.json["message"]
+    memory.remember(user_msg)
+    emotion.update(user_msg)
+    reply = markov.generate(user_msg, 10)
+    reply += " | " + nn.predict(user_msg)
+    reply += " | " + emotion.summary()
+    reply += " | " + transformer.generate(user_msg)
+    return jsonify({"reply": reply, "memory": memory.recall()})
 
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=10000)
