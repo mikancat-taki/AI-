@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
-from ai.model_markov import MarkovAI  # ここが ai/に変更済みで正しい
+from ai.model_markov import MarkovAI
 
 app = Flask(__name__)
-ai_model = MarkovAI()  # インスタンス作成
+ai_model = MarkovAI()  # AI モデルのインスタンス化
 
 @app.route('/')
 def index():
@@ -11,11 +11,11 @@ def index():
 @app.route('/generate', methods=['POST'])
 def generate():
     data = request.json
-    prompt = data.get('prompt', '')
+    prompt = data.get('prompt')
     if not prompt:
         return jsonify({"error": "promptが必要です"}), 400
     
-    result = ai_model.generate(prompt)  # MarkovAI の generate メソッドを呼ぶ
+    result = ai_model.generate(prompt)  # MarkovAI の generate を呼び出す
     return jsonify({"result": result})
 
 if __name__ == '__main__':
