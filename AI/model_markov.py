@@ -2,14 +2,11 @@
 
 class MarkovAI:
     def __init__(self):
-        # 必要なら初期データや辞書をここで用意
         self.memory = []
 
-    def generate_text(self, prompt):
+    def generate_text(self, prompt: str) -> str:
         """
-        ダミーの文章生成関数。
-        本来はマルコフ連鎖などのアルゴリズムで生成します。
+        ダミーのマルコフAIテキスト生成関数
         """
-        # ここでは単純に入力を返すだけ
         self.memory.append(prompt)
         return f"[MarkovAI] {prompt} を受け取りました"
