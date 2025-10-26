@@ -1,15 +1,26 @@
+import json, os
+
 class MemoryModule:
-    def __init__(self):
-        self.history = []
-        self.emotion = "😊"
-    def add_user_message(self, msg):
-        self.history.append(("user", msg))
-    def add_bot_message(self, msg):
-        self.history.append(("bot", msg))
-    def get_emotion_state(self):
-        # ユーザーの単語に応じて感情を変える
-        if any(word in self.history[-1][1] for word in ["怒", "ムカ", "嫌"]):
-            self.emotion = "😠"
-        elif any(word in self.history[-1][1] for word in ["嬉", "楽", "好き"]):
-            self.emotion = "😄"
-        return self.emotion
+    def __init__(self, path="memory.json"):
+        self.path = path
+        if not os.path.exists(self.path):
+            with open(self.path, "w") as f:
+                json.dump({"history": []}, f)
+        self.load()
+
+    def load(self):
+        with open(self.path, "r") as f:
+            self.data = json.load(f)
+
+    def save(self):
+        with open(self.path, "w") as f:
+            json.dump(self.data, f)
+
+    def remember(self, text):
+        self.data["history"].append(text)
+        if len(self.data["history"]) > 50:
+            self.data["history"] = self.data["history"][-50:]
+        self.save()
+
+    def recall(self):
+        return " ".join(self.data["history"][-5:])
