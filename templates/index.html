@@ -1,38 +1,16 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Original AI Chat</title>
-<style>
-body { background:#0d0d0d; color:#fff; font-family:sans-serif; text-align:center; }
-#chatbox { width:80%; margin:auto; background:#111; border-radius:10px; padding:10px; height:60vh; overflow-y:auto; }
-.user { color:#0ff; }
-.bot { color:#ff0; }
-input { width:70%; padding:10px; border-radius:8px; border:none; }
-button { padding:10px; border:none; border-radius:8px; background:#0ff; color:#000; cursor:pointer; }
-</style>
+  <title>AI Chat</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<h1>🧠 Original AI Chat</h1>
-<div id="chatbox"></div>
-<input id="msg" placeholder="メッセージを入力...">
-<button onclick="send()">送信</button>
-
-<script>
-async function send() {
-  const box = document.getElementById("chatbox");
-  const msg = document.getElementById("msg").value.trim();
-  if (!msg) return;
-  box.innerHTML += `<p class='user'>👤 ${msg}</p>`;
-  document.getElementById("msg").value = "";
-  const res = await fetch("/chat", {
-    method:"POST", headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({message:msg})
-  });
-  const data = await res.json();
-  box.innerHTML += `<p class='bot'>🤖 ${data.response}</p>`;
-  box.scrollTop = box.scrollHeight;
-}
-</script>
+  <div id="app">
+    <h1>🧠 Original AI Chat</h1>
+    <div id="chat-box"></div>
+    <input id="msg" placeholder="話しかけてみて..." />
+    <button id="send">送信</button>
+  </div>
+  <script src="/static/main.js"></script>
 </body>
 </html>
